@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useReducer, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
+import Search from "./Search";
 
 const initialState = {
   favorites: [],
@@ -20,6 +28,7 @@ const Characters = () => {
   const [characters, setCharacters] = useState([]);
   const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
   const [search, setSearch] = useState("");
+  const searchInput = useRef(null);
 
   const getCharacters = async () => {
     const response = await fetch("https://rickandmortyapi.com/api/character/");
@@ -35,18 +44,18 @@ const Characters = () => {
     dispatch({ type: "ADD_TO_FAVORITE", payload: favorite });
   };
 
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-  };
-  // const filteredUsers = characters.filter((user) => {
-  //  return user.name.toLowerCase().includes(search.toLowerCase());
-  // }); 
-  const filteredUsers = useMemo(() =>
-  characters.filter((user) => {
-      return user.name.toLowerCase().includes(search.toLowerCase());
-     }),
-     [characters, search] //array of dependencies. useMemo will only recompute the memoized value when one of the dependencies has changed
-  )
+
+  const handleSearch = useCallback(() => {
+    setSearch(searchInput.current.value);
+  }, []);
+
+  const filteredUsers = useMemo(
+    () =>
+      characters.filter((user) => {
+        return user.name.toLowerCase().includes(search.toLowerCase());
+      }),
+    [characters, search] //array of dependencies. useMemo will only recompute the memoized value when one of the dependencies has changed
+  );
 
   return (
     <div className="">
@@ -60,9 +69,13 @@ const Characters = () => {
         ))}
       </div>
       <b>Filtrar por nombre:</b>
-      <div className="Search">
-        <input type="text" value={search} onChange={handleSearch}></input>
-      </div>
+
+      <Search
+        search={search}
+        searchInput={searchInput}
+        handleSearch={handleSearch}
+      />
+
       <h1>Filtrados:</h1>
       <div className="Characters">
         {filteredUsers.map((character) => (
@@ -97,7 +110,6 @@ const Characters = () => {
 
       <h1>Sin filtrar:</h1>
       <div className="Characters">
-
         {characters.map((character) => (
           <div className="Character" key={character.id}>
             <h2>{character.name}</h2>
