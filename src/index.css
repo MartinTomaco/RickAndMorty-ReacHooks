@@ -34,7 +34,20 @@ code {
   border: none;
   padding: .3rem;
   border-radius: 8px;
+  margin-bottom: 1rem;
 }:focus { outline: none; }
+
+.favoritesCharacters{
+  display: flex;
+  flex-flow: row wrap;
+}
+.listFavorites{
+  list-style: none;
+}
+
+.favoritesSamples img{
+width: 50px;
+}
 
 .Characters {
   width: 100%;
